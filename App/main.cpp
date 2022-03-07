@@ -7,12 +7,13 @@
 
 #include "main.h"
 
+#include "comport.h"
+
 #include "eeprom24.h"
 
 #include <stdio.h>
 
 extern I2C_HandleTypeDef hi2c2;
-extern UART_HandleTypeDef huart2;
 
 Eeprom24_08 eeprom{&hi2c2};
 
@@ -23,23 +24,11 @@ int main()
 
 	MX_GPIO_Init();
 	MX_DMA_Init();
-
-	MX_USART2_UART_Init();
+	MX_TIM16_Init();
 	MX_I2C2_Init();
+	comport::init();
 
-	printf("Initializing EEPROM...\n");
-	if (eeprom.init())
-		printf("OK\n");
-	else
-		printf("Fail!");
-
-	uint8_t tx[] = {0xDE, 0xAD, 0xBE, 0xEF};
-	eeprom.writePage(500, tx, sizeof(tx));
-
-	HAL_Delay(500);
-
-	uint8_t rx[sizeof(tx)];
-	eeprom.readPage(500, rx, sizeof(tx));
+	eeprom.init();
 
 	while (true)
 	{
@@ -51,13 +40,5 @@ int main()
 	}
 }
 
-extern "C" int _write(int file, char* ptr, int len)
-{
-	auto status = HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, 100);
 
-	if (status == HAL_OK)
-		return len;
-	else
-		return 0;
-}
 
