@@ -7,10 +7,14 @@
 
 #include "main.h"
 
+#include "eeprom24.h"
+
 #include <stdio.h>
 
 extern I2C_HandleTypeDef hi2c2;
 extern UART_HandleTypeDef huart2;
+
+Eeprom24_512 eeprom{&hi2c2};
 
 int main()
 {
