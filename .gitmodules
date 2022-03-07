@@ -1,3 +1,9 @@
 [submodule "HalUtils"]
 	path = HalUtils
 	url = https://github.com/MartinD-CZ/HalUtils
+[submodule "eeprom24"]
+	path = eeprom24
+	url = https://github.com/MartinD-CZ/eeprom24
+[submodule "Eeprom24"]
+	path = Eeprom24
+	url = https://github.com/MartinD-CZ/Eeprom24_HAL
