@@ -1,0 +1,3 @@
+[submodule "HalUtils"]
+	path = HalUtils
+	url = https://github.com/MartinD-CZ/HalUtils
