@@ -14,7 +14,7 @@
 extern I2C_HandleTypeDef hi2c2;
 extern UART_HandleTypeDef huart2;
 
-Eeprom24_512 eeprom{&hi2c2};
+Eeprom24_08 eeprom{&hi2c2};
 
 int main()
 {
@@ -27,15 +27,27 @@ int main()
 	MX_USART2_UART_Init();
 	MX_I2C2_Init();
 
-	printf("Device started!\n");
+	printf("Initializing EEPROM...\n");
+	if (eeprom.init())
+		printf("OK\n");
+	else
+		printf("Fail!");
+
+	uint8_t tx[] = {0xDE, 0xAD, 0xBE, 0xEF};
+	eeprom.writePage(500, tx, sizeof(tx));
+
+	HAL_Delay(500);
+
+	uint8_t rx[sizeof(tx)];
+	eeprom.readPage(500, rx, sizeof(tx));
 
 	while (true)
 	{
 		HAL_GPIO_TogglePin(REDLED_GPIO_Port, REDLED_Pin);
 		HAL_Delay(500);
 
-		printf("tick1\n");
-		printf("tick2\n");
+		//printf("tick1\n");
+		//printf("tick2\n");
 	}
 }
 
