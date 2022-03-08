@@ -9,6 +9,7 @@
 #include "proj_conf.h"
 #include "hal_inc.h"
 #include "main.h"
+#include "version.h"
 
 #include <ctype.h>
 
@@ -42,9 +43,15 @@ void comport::init()
 {
 	MX_USART2_UART_Init();
 	HAL_UARTEx_ReceiveToIdle_DMA(&huart2, rxData, sizeof(rxData));
-	printf("Starting device...\n");
-
-	//TODO: print initial info
+	printf("\n\nBrymen 867/869 interface cable\nfor more info, see http://embedblog.eu/?p=819\n\n");
+	printf("Firmware revision/commit: %s/%s\n", _V_BUILD_TAG, _V_COMMIT);
+	printf("Available commands:\n");
+	printf("F - Five samples per second\n");
+	printf("O - One sample per second\n");
+	printf("S - Stop autosend\n");
+	printf("D - read single Data\n");
+	printf("R - toggle Raw data output\n");
+	printf("E - save current settings to Eeprom\n");
 }
 
 extern "C" int _write(int file, char* ptr, int len)
