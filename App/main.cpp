@@ -33,6 +33,15 @@ int main()
 	MX_DMA_Init();
 	MX_TIM16_Init();
 	MX_I2C2_Init();
+
+	//startup blink
+	for (uint_fast8_t i = 0; i < 6; i++)
+	{
+		HAL_GPIO_TogglePin(REDLED_GPIO_Port, REDLED_Pin);
+		HAL_Delay(250);
+	}
+
+	HAL_Delay(500);
 	comport::init();
 
 	//init eeprom & load data
@@ -45,12 +54,7 @@ int main()
 		printf("Valid settings loaded from EEPROM\n");
 	}
 
-	//startup blink
-	for (uint_fast8_t i = 0; i < 6; i++)
-	{
-		HAL_GPIO_TogglePin(REDLED_GPIO_Port, REDLED_Pin);
-		HAL_Delay(250);
-	}
+
 
 	while (true)
 	{
@@ -59,7 +63,7 @@ int main()
 			HAL_GPIO_WritePin(REDLED_GPIO_Port, REDLED_Pin, GPIO_PIN_RESET);
 			decoder::processMessage();
 			HAL_Delay(50);
-			HAL_GPIO_WritePin(REDLED_GPIO_Port, REDLED_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(REDLED_GPIO_Port, REDLED_Pin, GPIO_PIN_SET);
 
 			if (mode == Mode::SEND_1HZ)
 				HAL_Delay(920);
