@@ -13,9 +13,7 @@ extern TIM_HandleTypeDef htim16;
 void delay_us(uint16_t us)
 {
 	__HAL_TIM_SET_COUNTER(&htim16, 0);
-	__HAL_TIM_ENABLE(&htim16);
-	while (__HAL_TIM_GET_COUNTER(&htim16) < us);
-	__HAL_TIM_DISABLE(&htim16);
+	while (__HAL_TIM_GET_COUNTER(&htim16) <= us);
 }
 
 uint8_t receiveByte(void)
@@ -50,8 +48,10 @@ bool decoder::receiveMessage(void)
 			return false;
 	}
 
+	__HAL_TIM_ENABLE(&htim16);
 	for (uint8_t i = 0; i < 20; i ++)
 		data[i] = receiveByte();
+	__HAL_TIM_DISABLE(&htim16);
 
 	return 1;
 }
