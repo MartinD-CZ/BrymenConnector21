@@ -40,7 +40,7 @@ void comport::init()
 
 void comport::printHelp()
 {
-	printf("\n\nBrymen 867/869 interface cable\nfor more info, see http://embedblog.eu/?p=475\n\n");
+	printf("\n\nBrymen 867/869 interface cable\nfor more info, see http://embedblog.eu/?p=830\n\n");
 	printf("Firmware revision/commit: %s/%s\n", _V_BUILD_TAG, _V_COMMIT);
 	printf("Available commands:\n");
 	printf("F - Five samples per second\n");
