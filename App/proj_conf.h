@@ -23,5 +23,17 @@ enum class Mode: uint8_t
 	STOP
 };
 
+enum class Request: char
+{
+	NONE,
+	SAVE_EEPROM = 'e',
+	SET_MODE_1HZ = 'o',
+	SET_MODE_5HZ = 'f',
+	SET_MODE_STOP = 's',
+	REQUEST_DATA = 'd',
+	SET_RAW = 'r',
+	GET_HELP = 'h',
+};
+
 
 #endif /* PROJ_CONF_H_ */

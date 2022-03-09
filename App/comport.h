@@ -10,6 +10,7 @@
 namespace comport
 {
 	void init();
+	void printHelp();
 }
 
 

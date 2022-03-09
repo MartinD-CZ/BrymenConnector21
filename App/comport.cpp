@@ -14,10 +14,7 @@
 #include <ctype.h>
 
 extern UART_HandleTypeDef huart2;
-extern volatile Mode mode;
-extern volatile bool isSendingRawData;
-extern volatile bool isEepromSaveRequested;
-extern volatile bool isReadoutRequested;
+extern Request request;
 
 static uint8_t rxData[16];
 static char stdoutBuf[256];
@@ -26,29 +23,8 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	if (huart->Instance == huart2.Instance)
 	{
-		switch(tolower(rxData[0]))
-		{
-			case 'f':
-				mode = Mode::SEND_5HZ;
-				break;
-			case 'o':
-				mode = Mode::SEND_1HZ;
-				break;
-			case 's':
-				mode = Mode::STOP;
-				break;
-			case 'd':
-				mode = Mode::STOP;
-				isReadoutRequested = true;
-				break;
-			case 'r':
-				isSendingRawData = !isSendingRawData;
-				break;
-			case 'e':
-				isEepromSaveRequested = true;
-				break;
-			default: break;
-		}
+		request = (Request)tolower(rxData[0]);
+
 
 		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, rxData, sizeof(rxData));
 	}
@@ -59,6 +35,11 @@ void comport::init()
 	MX_USART2_UART_Init();
 	HAL_UARTEx_ReceiveToIdle_DMA(&huart2, rxData, sizeof(rxData));
 	setvbuf(stdout, stdoutBuf, _IOLBF, sizeof(stdoutBuf));		//use static buffer for printf
+	printHelp();
+}
+
+void comport::printHelp()
+{
 	printf("\n\nBrymen 867/869 interface cable\nfor more info, see http://embedblog.eu/?p=475\n\n");
 	printf("Firmware revision/commit: %s/%s\n", _V_BUILD_TAG, _V_COMMIT);
 	printf("Available commands:\n");
@@ -69,6 +50,7 @@ void comport::init()
 	printf("D - read single Data\n");
 	printf("R - toggle Raw data output\n");
 	printf("E - save current settings to Eeprom\n");
+	printf("H - prints out help & all available commands\n");
 }
 
 extern "C" int _write(int file, char* ptr, int len)

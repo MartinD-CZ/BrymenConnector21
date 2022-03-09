@@ -6,7 +6,7 @@
 #include "hal_inc.h"
 
 uint8_t data[20];
-extern volatile bool isSendingRawData;
+extern bool isSendingRawData;
 
 extern TIM_HandleTypeDef htim16;
 

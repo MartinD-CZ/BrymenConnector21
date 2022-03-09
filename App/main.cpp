@@ -17,10 +17,9 @@
 extern I2C_HandleTypeDef hi2c2;
 Eeprom24_08 eeprom{&hi2c2};
 
-volatile Mode mode;
-volatile bool isSendingRawData;
-volatile bool isEepromSaveRequested;
-volatile bool isReadoutRequested;
+bool isSendingRawData;
+Mode mode;			//current operating mode
+Request request;	//requests from serial console
 
 int main()
 {
@@ -53,6 +52,7 @@ int main()
 	}
 
 	uint32_t lastDataTick = 0;
+	bool isReadoutRequested = false;
 	while (true)
 	{
 		if ((mode == Mode::SEND_1HZ) && (HAL_GetTick() - lastDataTick >= 1000))
@@ -74,12 +74,44 @@ int main()
 			}
 		}
 
-		if (isEepromSaveRequested)
+		if (request != Request::NONE)
 		{
-			isEepromSaveRequested = false;
-			eeprom.writeByte(EEPROM_VALID_ADDR, EEPROM_VALID_FLAG);
-			eeprom.waitForReady();
-			eeprom.writeByte(EEPROM_CONF_ADDR, (uint8_t)((uint8_t)mode | ((uint8_t)isSendingRawData << 7)));
+			switch(request)
+			{
+				case Request::SET_MODE_5HZ:
+					mode = Mode::SEND_5HZ;
+					printf("Setting full datarate (cca 5 Hz)\n");
+					break;
+				case Request::SET_MODE_1HZ:
+					mode = Mode::SEND_1HZ;
+					printf("Setting datarate to 1 Hz\n");
+					break;
+				case Request::SET_MODE_STOP:
+					mode = Mode::STOP;
+					printf("Stopping data acquisition\n");
+					break;
+				case Request::REQUEST_DATA:
+					mode = Mode::STOP;
+					isReadoutRequested = true;
+					printf("Getting single sample\n");
+					break;
+				case Request::SET_RAW:
+					isSendingRawData = !isSendingRawData;
+					printf("Printing %s values\n", isSendingRawData ? "raw" : "decoded");
+					break;
+				case Request::SAVE_EEPROM:
+					eeprom.writeByte(EEPROM_VALID_ADDR, EEPROM_VALID_FLAG);
+					eeprom.waitForReady();
+					eeprom.writeByte(EEPROM_CONF_ADDR, (uint8_t)((uint8_t)mode | ((uint8_t)isSendingRawData << 7)));
+					printf("Current settings saved to EEPROM\n");
+					break;
+				case Request::GET_HELP:
+					comport::printHelp();
+					break;
+				default: break;
+			}
+
+			request = Request::NONE;
 		}
 	}
 }
