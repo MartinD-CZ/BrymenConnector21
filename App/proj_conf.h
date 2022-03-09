@@ -20,8 +20,7 @@ enum class Mode: uint8_t
 {
 	SEND_1HZ,
 	SEND_5HZ,
-	STOP,
-	SEND_SINGLE
+	STOP
 };
 
 

@@ -17,6 +17,7 @@ extern UART_HandleTypeDef huart2;
 extern volatile Mode mode;
 extern volatile bool isSendingRawData;
 extern volatile bool isEepromSaveRequested;
+extern volatile bool isReadoutRequested;
 
 static uint8_t rxData[16];
 static char stdoutBuf[256];
@@ -27,12 +28,25 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 	{
 		switch(tolower(rxData[0]))
 		{
-			case 'f': mode = Mode::SEND_5HZ; break;
-			case 'o': mode = Mode::SEND_1HZ; break;
-			case 's': mode = Mode::STOP; break;
-			case 'd': mode = Mode::SEND_SINGLE; break;
-			case 'r': isSendingRawData = !isSendingRawData; break;
-			case 'e': isEepromSaveRequested = true; break;
+			case 'f':
+				mode = Mode::SEND_5HZ;
+				break;
+			case 'o':
+				mode = Mode::SEND_1HZ;
+				break;
+			case 's':
+				mode = Mode::STOP;
+				isReadoutRequested = true;
+				break;
+			case 'd':
+				mode = Mode::STOP;
+				break;
+			case 'r':
+				isSendingRawData = !isSendingRawData;
+				break;
+			case 'e':
+				isEepromSaveRequested = true;
+				break;
 			default: break;
 		}
 

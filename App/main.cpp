@@ -20,6 +20,7 @@ Eeprom24_08 eeprom{&hi2c2};
 volatile Mode mode;
 volatile bool isSendingRawData;
 volatile bool isEepromSaveRequested;
+volatile bool isReadoutRequested;
 
 int main()
 {
@@ -54,25 +55,24 @@ int main()
 		printf("Valid settings loaded from EEPROM\n");
 	}
 
-
-
+	uint32_t lastDataTick = 0;
 	while (true)
 	{
-		if (decoder::receiveMessage())
-		{
-			HAL_GPIO_WritePin(REDLED_GPIO_Port, REDLED_Pin, GPIO_PIN_RESET);
-			decoder::processMessage();
-			HAL_Delay(50);
-			HAL_GPIO_WritePin(REDLED_GPIO_Port, REDLED_Pin, GPIO_PIN_SET);
+		if ((mode == Mode::SEND_1HZ) && (HAL_GetTick() - lastDataTick >= 1000))
+			isReadoutRequested = true;
+		else if ((mode == Mode::SEND_5HZ) && (HAL_GetTick() - lastDataTick >= 200))
+			isReadoutRequested = true;
 
-			if (mode == Mode::SEND_1HZ)
-				HAL_Delay(920);
-			else if (mode == Mode::SEND_5HZ)
-				continue;
-			else
+		if (isReadoutRequested)
+		{
+			if (decoder::receiveMessage())
 			{
-				mode = Mode::STOP;
-				while (mode == Mode::STOP);
+				HAL_GPIO_WritePin(REDLED_GPIO_Port, REDLED_Pin, GPIO_PIN_RESET);
+				lastDataTick = HAL_GetTick();
+				isReadoutRequested = false;
+				decoder::processMessage();
+				HAL_Delay(50);
+				HAL_GPIO_WritePin(REDLED_GPIO_Port, REDLED_Pin, GPIO_PIN_SET);
 			}
 		}
 
