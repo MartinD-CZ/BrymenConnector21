@@ -57,15 +57,16 @@ int main()
 	{
 		if ((mode == Mode::SEND_1HZ) && (HAL_GetTick() - lastDataTick >= 1000))
 			isReadoutRequested = true;
-		else if ((mode == Mode::SEND_5HZ) && (HAL_GetTick() - lastDataTick >= 200))
+		else if (mode == Mode::SEND_5HZ)
 			isReadoutRequested = true;
 
 		if (isReadoutRequested)
 		{
+			uint32_t measurementStart = HAL_GetTick();
 			if (decoder::receiveMessage())
 			{
 				HAL_GPIO_WritePin(REDLED_GPIO_Port, REDLED_Pin, GPIO_PIN_RESET);
-				lastDataTick = HAL_GetTick();
+				lastDataTick = measurementStart;
 				isReadoutRequested = false;
 				decoder::processMessage();
 				HAL_Delay(50);

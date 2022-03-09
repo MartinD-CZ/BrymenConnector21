@@ -36,10 +36,10 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 				break;
 			case 's':
 				mode = Mode::STOP;
-				isReadoutRequested = true;
 				break;
 			case 'd':
 				mode = Mode::STOP;
+				isReadoutRequested = true;
 				break;
 			case 'r':
 				isSendingRawData = !isSendingRawData;
@@ -63,6 +63,7 @@ void comport::init()
 	printf("Firmware revision/commit: %s/%s\n", _V_BUILD_TAG, _V_COMMIT);
 	printf("Available commands:\n");
 	printf("F - Five samples per second\n");
+	printf("   (note that the multimeter doesn't support this with both displays (AUX and MAIN) enabled)\n");
 	printf("O - One sample per second\n");
 	printf("S - Stop autosend\n");
 	printf("D - read single Data\n");
