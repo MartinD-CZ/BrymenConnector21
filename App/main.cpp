@@ -28,9 +28,6 @@ int main()
 	SystemClock_Config();
 
 	MX_GPIO_Init();
-	HAL_GPIO_WritePin(IRLED_GPIO_Port, IRLED_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(REDLED_GPIO_Port, REDLED_Pin, GPIO_PIN_SET);
-
 	MX_DMA_Init();
 	MX_TIM16_Init();
 	MX_I2C2_Init();
